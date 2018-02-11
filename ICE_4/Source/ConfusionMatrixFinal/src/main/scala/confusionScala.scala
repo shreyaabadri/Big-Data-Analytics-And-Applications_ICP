@@ -7,24 +7,21 @@ object confusionScala {
   def main(args: Array[String]) {
 
 
-    val sparkConf = new SparkConf().setAppName("confusionScala").setMaster("local[*]")
+    val sparkConf = new SparkConf().setAppName("confusionScala").setMaster("Confusion Matrix")
     val sc = new SparkContext(sparkConf)
 
 
     val data = sc.textFile("/Volumes/Data/BigDataAnalytics/ICMP4/CS5542-Tutorial2B-SourceCode/image_classification_Linux_MacOS/input/sample.txt")
-    val parsedData = data.map(line=>{line.split(",")}).map(line=>(line(0),line(1)))
-    parsedData.foreach(println)
+    val parsedData = data.map(line=>{line.split(",")})
+    val parsedwords = parsedData.map(word=>(word(0),word(1)))
+    parsedwords.foreach(println)
 
-    val predictionAndLabel =  parsedData.map(x => (if (x._1.equals("man"))
-      "0".toDouble
-    else  "1".toDouble,
+    val predictionAndActual =  parsedwords.map(firstword => (if (firstword._1.equals("man")) 0.0  else  1.0,
 
-      if (x._2.equals("man"))
-        "0".toDouble
-      else "1".toDouble))
+                                                             if (firstword._2.equals("man")) 0.0 else 1.0))
 
 
-    val confusion_metrics = new MulticlassMetrics(predictionAndLabel)
+    val confusion_metrics = new MulticlassMetrics(predictionAndActual)
     val confusionMatrix = confusion_metrics.confusionMatrix
     println("Confusion Matrix:\n" )
     println(confusionMatrix)
